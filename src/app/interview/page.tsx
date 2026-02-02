@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ChatBubble from '@/components/ChatBubble';
-import { mockMessages, Message } from '@/data/mockData';
+import { useInterview } from '@/hooks/useInterview';
 import styles from './page.module.css';
 
 import { 
@@ -18,38 +18,44 @@ import {
 
 export default function InterviewChat() {
   const router = useRouter();
-  const [messages, setMessages] = useState<Message[]>(mockMessages);
+  const { 
+    messages, 
+    status, 
+    currentTranscript, 
+    sessionId,
+    startSession, 
+    sendMessage, 
+    startListening, 
+    stopListening 
+  } = useInterview();
+
   const [inputValue, setInputValue] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const [status, setStatus] = useState<'listening' | 'thinking' | 'feedback'>('listening');
+
+  // Start session on mount
+  useEffect(() => {
+    startSession('backend', 'mid');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Update input when transcript changes
+  useEffect(() => {
+    if (status === 'listening') {
+        setInputValue(currentTranscript);
+    }
+  }, [currentTranscript, status]);
 
   const handleSendMessage = () => {
     if (!inputValue.trim()) return;
-
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: inputValue,
-      timestamp: new Date()
-    };
-
-    setMessages([...messages, newMessage]);
+    sendMessage(inputValue);
     setInputValue('');
-    setIsTyping(true);
-    setStatus('thinking');
+  };
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'ai',
-        content: "That's a valid point. Can you give me a specific example of a schema design that benefits from this?",
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, aiResponse]);
-      setIsTyping(false);
-      setStatus('feedback');
-    }, 2000);
+  const handleMicClick = () => {
+    if (status === 'listening') {
+        stopListening();
+    } else {
+        startListening();
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -64,15 +70,14 @@ export default function InterviewChat() {
       {/* Header */}
       <div className={styles.header}>
         <Link href="/" className={styles.logo}>
-      
-        <div className={styles.brandSection}>
-          <div className={styles.logoIcon}>💻</div>
-          <div className={styles.brandInfo}>
-            <h1 className={styles.brandName}>TechPrepAI</h1>
-            <span className={styles.brandSubtitle}>System Design Interview</span>
-          </div>
-        </div>
-  </Link>
+            <div className={styles.brandSection}>
+            <div className={styles.logoIcon}>💻</div>
+            <div className={styles.brandInfo}>
+                <h1 className={styles.brandName}>TechPrepAI</h1>
+                <span className={styles.brandSubtitle}>System Design Interview</span>
+            </div>
+            </div>
+        </Link>
         <div className={styles.tabs}>
           <button className={`${styles.tab} ${styles.activeTab}`}>Practice</button>
           <button className={styles.tab}>History</button>
@@ -80,6 +85,21 @@ export default function InterviewChat() {
         </div>
 
         <div className={styles.headerControls}>
+          <button 
+            onClick={() => sessionId && router.push(`/summary?sessionId=${sessionId}`)}
+            style={{ 
+                marginRight: '1rem', 
+                padding: '0.5rem 1rem', 
+                background: '#22c55e', 
+                border: 'none', 
+                borderRadius: '6px', 
+                cursor: 'pointer', 
+                color: 'white',
+                fontWeight: 600
+            }}
+          >
+            Finish
+          </button>
           <button className={styles.iconBtn}>
             <Settings size={20} />
           </button>
@@ -98,11 +118,11 @@ export default function InterviewChat() {
           <div className={`${styles.statusItem} ${status === 'thinking' ? styles.activeStatus : ''}`}>
             <span className={styles.statusIcon}>💭</span> Thinking
           </div>
-          <div className={`${styles.statusItem} ${status === 'feedback' ? styles.activeStatus : ''}`}>
-             <span className={styles.statusIcon}>✔️</span> Feedback Ready
+          <div className={`${styles.statusItem} ${status === 'speaking' ? styles.activeStatus : ''}`}>
+             <span className={styles.statusIcon}>🔊</span> Speaking
           </div>
         </div>
-        <div className={styles.sessionTime}>Session started at 10:42 AM</div>
+        <div className={styles.sessionTime}>Session Active</div>
       </div>
 
       {/* Chat Area */}
@@ -111,9 +131,9 @@ export default function InterviewChat() {
           {messages.map((message) => (
             <ChatBubble key={message.id} message={message} />
           ))}
-          {isTyping && (
+          {status === 'thinking' && (
             <div className={styles.typingIndicator}>
-              <span>Listening...</span>
+              <span>Thinking...</span>
             </div>
           )}
         </div>
@@ -122,9 +142,11 @@ export default function InterviewChat() {
       {/* Input Area */}
       <div className={styles.bottomSection}>
         {/* Listening Text */}
-        <div className={styles.listeningText}>
-            Sure, for example if we are building a user profile system where the attributes... ▍
-        </div>
+        {status === 'listening' && (
+            <div className={styles.listeningText}>
+                {currentTranscript || "Listening..."} ▍
+            </div>
+        )}
 
         {/* Input Box */}
         <div className={styles.inputBox}>
@@ -132,12 +154,13 @@ export default function InterviewChat() {
           <input 
             type="text" 
             className={styles.textInput}
-            placeholder="Sure, for example if we are building a user profile system..." 
+            placeholder={status === 'listening' ? "Listening..." : "Type your answer..."}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
+            disabled={status === 'listening' || status === 'thinking'}
           />
-          <button className={styles.deleteBtn}>
+          <button className={styles.deleteBtn} onClick={() => setInputValue('')}>
             <Trash2 size={20} />
           </button>
         </div>
@@ -151,12 +174,15 @@ export default function InterviewChat() {
             <span className={styles.controlLabel}>Try Again</span>
           </div>
 
-          <button className={styles.mainMicBtn} onClick={handleSendMessage}>
+          <button 
+            className={`${styles.mainMicBtn} ${status === 'listening' ? styles.micActive : ''}`} 
+            onClick={handleMicClick}
+          >
              <Mic size={32} />
           </button>
 
           <div className={styles.controlGroup}>
-            <button className={styles.controlBtn} onClick={handleSendMessage}>
+            <button className={styles.controlBtn} onClick={handleSendMessage} disabled={!inputValue.trim()}>
               <Send size={24} />
             </button>
              <span className={styles.controlLabel}>Send</span>

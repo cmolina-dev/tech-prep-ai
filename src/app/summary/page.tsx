@@ -1,14 +1,50 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useEffect, useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import SummaryMetrics from '@/components/SummaryMetrics';
 import PerformanceChart from '@/components/PerformanceChart/PerformanceChart';
 import SessionQuestions from '@/components/SessionQuestions';
-import { performanceHistory } from '@/data/mockData';
+import { performanceHistory } from '@/data/mockData'; // Keep this for now or fetch extended history
 import styles from './page.module.css';
 
-export default function SessionSummary() {
+function SessionSummaryContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const sessionId = searchParams.get('sessionId');
+  const [summaryData, setSummaryData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!sessionId) {
+        // If no session, maybe just load generic/mock or redirect
+        // For now, let's try to load a default if testing, or just set loading false
+        setLoading(false);
+        return;
+    }
+
+    async function fetchSummary() {
+        try {
+            const res = await fetch(`/api/session/${sessionId}/summary`);
+            if (res.ok) {
+                const data = await res.json();
+                setSummaryData(data);
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    fetchSummary();
+  }, [sessionId]);
+
+  if (loading) return <div className={styles.container}>Loading summary...</div>;
+
+  // Use real data or fallback to empty state
+  const stats = summaryData?.stats || { overallScore: 0 };
+  const questions = summaryData?.questions || [];
 
   return (
     <div className={styles.container}>
@@ -23,11 +59,11 @@ export default function SessionSummary() {
       </header>
 
       <div className={styles.content}>
-        <SummaryMetrics />
+        <SummaryMetrics stats={stats} />
         
         <PerformanceChart data={performanceHistory} />
         
-        <SessionQuestions />
+        <SessionQuestions questions={questions} />
       </div>
 
       <div className={styles.footer}>
@@ -35,4 +71,12 @@ export default function SessionSummary() {
       </div>
     </div>
   );
+}
+
+export default function SessionSummary() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <SessionSummaryContent />
+        </Suspense>
+    );
 }

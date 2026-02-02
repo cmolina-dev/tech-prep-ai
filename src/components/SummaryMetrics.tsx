@@ -4,7 +4,6 @@ interface MetricCardProps {
   title: string;
   value: string;
   change?: string;
-  scoreValue?: string; // For "8/10" vs "92%" vs "High"
   icon: string;
   colorClass: string;
   changeLabel?: string;
@@ -30,30 +29,38 @@ function MetricCard({ title, value, change, icon, colorClass, changeLabel }: Met
   );
 }
 
-export default function SummaryMetrics() {
+interface SummaryMetricsProps {
+    stats: {
+        overallScore?: number;
+        accuracy?: number;
+        // extended stats
+    }
+}
+
+export default function SummaryMetrics({ stats }: SummaryMetricsProps) {
   return (
     <div className={styles.grid}>
       <MetricCard
         title="Fluency Score"
-        value="8/10"
-        change="↗ 10%"
+        value={`${stats.overallScore || 0}/100`}
+        change="-"
         icon="🔊"
         colorClass="blue"
       />
       <MetricCard
         title="Grammar Accuracy"
-        value="92%"
-        change="↗ 5%"
+        value="N/A"
+        change="-"
         icon="Aq"
         colorClass="blue"
       />
       <MetricCard
         title="Technical Clarity"
-        value="High"
-        change="Consistent"
+        value="N/A"
+        change="-"
         icon="⚙️"
         colorClass="blue"
-        changeLabel="" // Just displaying "Consistent" with checkmark essentially
+        changeLabel="" 
       />
     </div>
   );
