@@ -1,0 +1,188 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.icon {
+  color: #f97316;
+  font-size: 1.25rem;
+}
+
+.title {
+  color: #fff;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.correctionItem {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.correctionItem:last-child {
+  border-bottom: none;
+}
+
+.correctionRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.text {
+  color: #cbd5e1;
+  font-size: 0.875rem;
+}
+
+.incorrectIcon {
+  color: #ef4444;
+  font-size: 0.75rem; /* Make icons smaller to match text better if needed */
+  margin-top: 2px;
+}
+
+.correctIcon {
+  color: #22c55e;
+  font-size: 0.75rem;
+  margin-top: 2px;
+}
+
+.incorrect {
+  text-decoration: line-through;
+  color: #ef4444;
+}
+
+.correct {
+  color: #22c55e;
+  font-weight: 500;
+}
+
+.explanation {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Natural Phrasing Card */
+.gradientCard {
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  position: relative;
+}
+
+.upgradeHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.upgradeLabel {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  font-size: 0.625rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.quoteIcon {
+  font-size: 2rem;
+  color: rgba(59, 130, 246, 0.2);
+  line-height: 0;
+  font-family: serif;
+}
+
+.phraseBlock {
+  margin-bottom: 1rem;
+}
+
+.phraseLabel {
+  color: #64748b;
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.phraseText {
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 0.875rem;
+}
+
+.improvedText {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.highlight {
+  color: #3b82f6;
+}
+
+.listenBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: none;
+  color: #3b82f6;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 1rem;
+}
+
+/* Vocabulary Upskill */
+.vocabContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.vocabRow {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vocabOriginal {
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+.arrow {
+  color: #475569;
+  font-size: 0.875rem;
+}
+
+.vocabBetter {
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.875rem;
+}

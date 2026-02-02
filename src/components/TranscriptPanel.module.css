@@ -1,0 +1,205 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.titleWithIcon {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.icon {
+  color: #3b82f6;
+  font-size: 1.25rem;
+}
+
+.header h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+}
+
+.controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.controlBtn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.controlBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.transcriptCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.text {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: #cbd5e1;
+  margin-bottom: 2rem;
+}
+
+.error {
+  text-decoration: underline;
+  text-decoration-color: #ef4444;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
+}
+
+.suggestion {
+  text-decoration: underline;
+  text-decoration-color: #f59e0b;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
+}
+
+.legend {
+  display: flex;
+  gap: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1rem;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.dotError {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #ef4444;
+}
+
+.dotSuggestion {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #f59e0b;
+}
+
+.dotGood {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #22c55e;
+}
+
+/* Focus Words Section */
+.focusSection {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.focusHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.focusHeader h3 {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  margin: 0;
+  letter-spacing: 0.05em;
+}
+
+.wordCard {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.wordCard:last-child {
+  margin-bottom: 0;
+}
+
+.playWordBtn {
+  background: rgba(59, 130, 246, 0.2);
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.wordInfo {
+  flex: 1;
+}
+
+.wordTop {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+  align-items: center;
+}
+
+.word {
+  font-weight: 600;
+  color: #fff;
+}
+
+.scoreLow {
+  color: #ef4444;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.scoreMed {
+  color: #f59e0b;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.wordDetails {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-family: monospace;
+}
+
+.phonetic {
+  color: #cbd5e1;
+}
