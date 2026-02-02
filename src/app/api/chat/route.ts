@@ -38,12 +38,15 @@ export async function POST(req: Request) {
 
     // 4. Prepare Prompts
     // Safe cast or fallback
-    const systemPrompt = SYSTEM_PROMPTS[session.topic as InterviewTopic]?.[session.difficulty as Difficulty] 
+    const systemPrompt = SYSTEM_PROMPTS[session.topic as InterviewTopic]?.[session.difficulty as Difficulty] + " Answer concisely but not too short. Avoid emojis. After the explanation, ask one follow-up question." 
         || "You are a helpful technical interviewer.";
     
     const apiMessages = [
       { role: "system", content: systemPrompt },
-      ...history.map(m => ({ role: m.role as "user" | "assistant", content: m.content }))
+      ...history.map(m => ({ 
+        role: (m.role === 'ai' ? 'assistant' : m.role) as "user" | "assistant" | "system", 
+        content: m.content 
+      }))
     ];
 
     // 5. Call AI (Stream)
