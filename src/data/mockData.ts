@@ -279,3 +279,34 @@ export const summaryStats = {
   averageTime: '32 min',
   improvement: '+20%'
 };
+
+export interface TechOption {
+  id: string;
+  name: string;
+  icon: string;
+}
+
+export const techOptions: Record<string, TechOption[]> = {
+  frontend: [
+    { id: 'react', name: 'React', icon: '⚛️' },
+    { id: 'vue', name: 'Vue.js', icon: '💚' },
+    { id: 'angular', name: 'Angular', icon: '🅰️' },
+    { id: 'nextjs', name: 'Next.js', icon: '▲' },
+    { id: 'css', name: 'CSS/HTML', icon: '🎨' },
+    { id: 'typescript', name: 'TypeScript', icon: '📘' },
+  ],
+  backend: [
+    { id: 'node', name: 'Node.js', icon: '🟢' },
+    { id: 'python', name: 'Python', icon: '🐍' },
+    { id: 'java', name: 'Java', icon: '☕' },
+    { id: 'go', name: 'Go', icon: '🐹' },
+    { id: 'sql', name: 'SQL/DB', icon: '🗄️' },
+    { id: 'system_design', name: 'System Design', icon: '🏗️' },
+  ],
+  mobile: [
+    { id: 'react_native', name: 'React Native', icon: '⚛️' },
+    { id: 'flutter', name: 'Flutter', icon: '🐦' },
+    { id: 'ios', name: 'iOS/Swift', icon: '🍎' },
+    { id: 'android', name: 'Android', icon: '🤖' },
+  ]
+};

@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Settings } from 'lucide-react';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Settings } from "lucide-react";
 
 export default function Header() {
   const pathname = usePathname();
 
   const navItems = [
-    { href: '/', label: 'Interview Setup' },
-    { href: '/interview', label: 'Practice' },
-    { href: '/results', label: 'Results' },
-    { href: '/summary', label: 'Summary' }
+    { href: "/", label: "Interview Setup" },
+    { href: "/interview", label: "Practice" },
+    { href: "/results", label: "Results" },
+    { href: "/summary", label: "Summary" },
   ];
 
   // Hide header on interview page
-  if (pathname?.startsWith('/interview')) {
+  if (pathname?.startsWith("/interview") || pathname?.startsWith("/settings")) {
     return null;
   }
 
@@ -26,7 +26,7 @@ export default function Header() {
           <span className="text-xl font-bold text-white">TechPrepAI</span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-1">
+        {/* <nav className="hidden md:flex items-center gap-1">
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -38,7 +38,7 @@ export default function Header() {
               {item.label}
             </Link>
           ))}
-        </nav>
+        </nav> */}
 
         <div className="flex items-center gap-2">
           <Link href="/settings">

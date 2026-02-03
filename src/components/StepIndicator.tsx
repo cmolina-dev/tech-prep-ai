@@ -1,5 +1,5 @@
 
-import { GitFork, Terminal, Settings, Check } from 'lucide-react';
+import { GitFork, Terminal, Layers, Check } from 'lucide-react';
 
 interface StepIndicatorProps {
   currentStep: number;
@@ -10,11 +10,11 @@ export default function StepIndicator({ currentStep, totalSteps }: StepIndicator
   const steps = [
     { id: 1, label: "SELECT PATH", icon: GitFork },
     { id: 2, label: "TECHNOLOGIES", icon: Terminal },
-    { id: 3, label: "CONFIGURATION", icon: Settings },
+    { id: 3, label: "DIFFICULTY", icon: Layers },
   ];
 
   return (
-    <div className="flex items-center justify-center w-full max-w-3xl mx-auto mb-16">
+    <div className="flex items-center justify-center w-full max-w-3xl mx-auto mt-10">
       {steps.map((step, index) => {
         const Icon = step.icon;
         const isCompleted = currentStep > step.id;

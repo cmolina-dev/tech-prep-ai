@@ -1,9 +1,16 @@
-import React from 'react'
+import { getPaths, getTechnologies, getDifficulties } from '@/app/actions';
+import SettingsDashboard from '@/components/Admin/SettingsDashboard';
 
-const SettingsPage = () => {
+export default async function SettingsPage() {
+  const paths = await getPaths();
+  const technologies = await getTechnologies();
+  const difficulties = await getDifficulties();
+
   return (
-    <div>SettingsPage</div>
-  )
+    <SettingsDashboard 
+      initialPaths={paths}
+      initialTechnologies={technologies}
+      initialDifficulties={difficulties}
+    />
+  );
 }
-
-export default SettingsPage

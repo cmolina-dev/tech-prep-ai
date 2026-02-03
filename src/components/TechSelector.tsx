@@ -1,11 +1,6 @@
 
 import { Check } from 'lucide-react';
-
-interface TechOption {
-  id: string;
-  name: string;
-  icon: string; // Emoji for MVP
-}
+import { techOptions } from '@/data/mockData';
 
 interface TechSelectorProps {
   stack: string; // 'frontend' | 'backend' | 'mobile'
@@ -13,33 +8,8 @@ interface TechSelectorProps {
   onToggle: (techId: string) => void;
 }
 
-const TECH_OPTIONS: Record<string, TechOption[]> = {
-  frontend: [
-    { id: 'react', name: 'React', icon: '⚛️' },
-    { id: 'vue', name: 'Vue.js', icon: '💚' },
-    { id: 'angular', name: 'Angular', icon: '🅰️' },
-    { id: 'nextjs', name: 'Next.js', icon: '▲' },
-    { id: 'css', name: 'CSS/HTML', icon: '🎨' },
-    { id: 'typescript', name: 'TypeScript', icon: '📘' },
-  ],
-  backend: [
-    { id: 'node', name: 'Node.js', icon: '🟢' },
-    { id: 'python', name: 'Python', icon: '🐍' },
-    { id: 'java', name: 'Java', icon: '☕' },
-    { id: 'go', name: 'Go', icon: '🐹' },
-    { id: 'sql', name: 'SQL/DB', icon: '🗄️' },
-    { id: 'system_design', name: 'System Design', icon: '🏗️' },
-  ],
-  mobile: [
-    { id: 'react_native', name: 'React Native', icon: '⚛️' },
-    { id: 'flutter', name: 'Flutter', icon: '🐦' },
-    { id: 'ios', name: 'iOS/Swift', icon: '🍎' },
-    { id: 'android', name: 'Android', icon: '🤖' },
-  ]
-};
-
 export default function TechSelector({ stack, selectedTechs, onToggle }: TechSelectorProps) {
-  const options = TECH_OPTIONS[stack] || TECH_OPTIONS.frontend;
+  const options = techOptions[stack] || techOptions.frontend;
 
   return (
     <div className="w-full">
