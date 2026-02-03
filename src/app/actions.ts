@@ -1,112 +1,208 @@
-'use server';
+"use server";
 
-import db from '@/lib/db';
-import { revalidatePath } from 'next/cache';
-import { InterviewPath, TechOption, DifficultyOption } from '@/data/mockData';
+import { db } from "@/db";
+import { revalidatePath } from "next/cache";
+import { InterviewPath, TechOption, DifficultyOption } from "@/data/mockData";
+import { paths, technologies, difficultyLevels } from "@/db/schema";
+import { eq, desc } from "drizzle-orm";
 
 // --- PATHS ---
 
 export async function getPaths(): Promise<InterviewPath[]> {
-  const rows = db.prepare('SELECT * FROM paths').all() as any[];
-  
-  // For each path, get related topics/technologies
-  // This is a simplistic approach (N+1), but fine for SQLite/local MVP with small data
-  const paths = rows.map((row) => {
-    // Join with technologies table to get names as "topics"
-    const techRows = db.prepare(`
-      SELECT t.name 
-      FROM technologies t
-      JOIN paths_technologies pt ON t.id = pt.technology_id
-      WHERE pt.path_id = ?
-    `).all(row.id) as { name: string }[];
+  const rows = await db.select().from(paths);
 
-    return {
-      id: row.id,
-      title: row.title,
-      description: row.description,
-      icon: row.icon,
-      image: '', // DB doesn't have image column yet per simple schema in db.ts, or we iterate to add it
-      topics: techRows.map(t => t.name)
-    };
-  });
-
-  return paths;
+  return rows.map((row) => ({
+    id: row.id,
+    title: row.title,
+    description: row.description || "",
+    icon: row.icon || "",
+    image: "", // DB schema doesn't have image yet
+    topics: row.topics ? row.topics.split(",") : [],
+  }));
 }
 
 export async function createPath(data: InterviewPath) {
-  const stmt = db.prepare('INSERT INTO paths (id, title, description, icon) VALUES (?, ?, ?, ?)');
-  stmt.run(data.id, data.title, data.description, data.icon);
-  revalidatePath('/settings');
-  revalidatePath('/');
+  await db.insert(paths).values({
+    id: data.id,
+    title: data.title,
+    description: data.description,
+    icon: data.icon,
+    topics: data.topics.join(","),
+  });
+  revalidatePath("/settings");
+  revalidatePath("/");
 }
 
 export async function updatePath(id: string, data: Partial<InterviewPath>) {
-   // Dynamic update query builder could be used here, but for now simple fixed columns
-   // Or just specific updates. For MVP edit, usually we send full object.
-   // Let's implement a simple direct update for the main fields.
-   
-   db.prepare(`
-     UPDATE paths 
-     SET title = ?, description = ?, icon = ?
-     WHERE id = ?
-   `).run(data.title || '', data.description || '', data.icon || '', id);
-   
-   revalidatePath('/settings');
-   revalidatePath('/');
+  await db
+    .update(paths)
+    .set({
+      title: data.title,
+      description: data.description,
+      icon: data.icon,
+      topics: data.topics ? data.topics.join(",") : undefined,
+    })
+    .where(eq(paths.id, id));
+
+  revalidatePath("/settings");
+  revalidatePath("/");
 }
 
 export async function deletePath(id: string) {
-  db.prepare('DELETE FROM paths WHERE id = ?').run(id);
-  revalidatePath('/settings');
-  revalidatePath('/');
+  await db.delete(paths).where(eq(paths.id, id));
+  revalidatePath("/settings");
+  revalidatePath("/");
 }
 
 // --- TECHNOLOGIES ---
 
 export async function getTechnologies(): Promise<TechOption[]> {
-  const rows = db.prepare('SELECT * FROM technologies').all() as any[];
-  return rows.map(r => ({
+  const rows = await db.select().from(technologies);
+  return rows.map((r) => ({
     id: r.id,
     name: r.name,
-    icon: r.icon,
-    category: r.category // Using extra field we added in seed
+    icon: r.icon || "",
+    category: r.category, // existing field in our schema
   }));
 }
 
-export async function createTechnology(data: TechOption & { category?: string }) {
-  db.prepare('INSERT INTO technologies (id, name, icon, category) VALUES (?, ?, ?, ?)')
-    .run(data.id, data.name, data.icon, data.category || 'other');
-  revalidatePath('/settings');
+export async function createTechnology(
+  data: TechOption & { category?: string },
+) {
+  await db.insert(technologies).values({
+    id: data.id,
+    name: data.name,
+    icon: data.icon,
+    category: data.category || "other",
+  });
+  revalidatePath("/settings");
 }
 
 export async function deleteTechnology(id: string) {
-  db.prepare('DELETE FROM technologies WHERE id = ?').run(id);
-  revalidatePath('/settings');
+  await db.delete(technologies).where(eq(technologies.id, id));
+  revalidatePath("/settings");
 }
 
 // --- DIFFICULTIES ---
 
 export async function getDifficulties(): Promise<DifficultyOption[]> {
-  const rows = db.prepare('SELECT * FROM difficulty_levels ORDER BY level_order ASC').all() as any[];
-  return rows.map(r => ({
+  const rows = await db
+    .select()
+    .from(difficultyLevels)
+    .orderBy(difficultyLevels.levelOrder);
+  return rows.map((r) => ({
     id: r.id,
     title: r.title,
-    description: r.description,
-    color: r.color
+    description: r.description || "",
+    color: r.color || "",
   }));
 }
 
 export async function createDifficulty(data: DifficultyOption) {
   // Get max order
-  const max = db.prepare('SELECT MAX(level_order) as m FROM difficulty_levels').get() as { m: number };
-  const nextOrder = (max.m || 0) + 1;
+  const maxResult = await db
+    .select({ value: difficultyLevels.levelOrder })
+    .from(difficultyLevels)
+    .orderBy(desc(difficultyLevels.levelOrder))
+    .limit(1);
 
-  db.prepare('INSERT INTO difficulty_levels (id, title, description, color, level_order) VALUES (?, ?, ?, ?, ?)')
-    .run(data.id, data.title, data.description, data.color, nextOrder);
-  revalidatePath('/settings');
+  const nextOrder = (maxResult[0]?.value || 0) + 1;
+
+  await db.insert(difficultyLevels).values({
+    id: data.id,
+    title: data.title,
+    description: data.description,
+    color: data.color,
+    levelOrder: nextOrder,
+  });
+  revalidatePath("/settings");
 }
 
 export async function deleteDifficulty(id: string) {
-  db.prepare('DELETE FROM difficulty_levels WHERE id = ?').run(id);
-  revalidatePath('/settings');
+  await db.delete(difficultyLevels).where(eq(difficultyLevels.id, id));
+  revalidatePath("/settings");
+}
+
+// --- SESSIONS ---
+
+import { sessions } from "@/db/schema";
+
+export async function createSession(config: {
+  pathId: string;
+  techIds: string[];
+  difficulty: string;
+  mode: string;
+}) {
+  const id = crypto.randomUUID();
+  await db.insert(sessions).values({
+    id,
+    pathId: config.pathId,
+    techIds: config.techIds.join(","),
+    difficulty: config.difficulty,
+    topic: "Interview", // Default topic
+    isActive: true,
+    startTime: new Date(),
+  });
+  return id;
+}
+
+export async function getSessionContext(sessionId: string) {
+  const session = await db
+    .select()
+    .from(sessions)
+    .where(eq(sessions.id, sessionId))
+    .limit(1);
+  if (!session.length) return null;
+
+  const s = session[0];
+
+  // Fetch Path Title
+  const path = await db
+    .select()
+    .from(paths)
+    .where(eq(paths.id, s.pathId || ""))
+    .limit(1);
+  const pathTitle = path[0]?.title || "General";
+
+  // Fetch Tech Names
+  let techNames: string[] = [];
+  if (s.techIds) {
+    const ids = s.techIds.split(",");
+    // Drizzle doesn't have 'inArray' easily reachable globally without importing?
+    // actually `inArray(technologies.id, ids)` works.
+    // simpler: fetch all techs and filter, or just map if we want to be lazy.
+    // or use inArray: import { inArray } from 'drizzle-orm';
+    // I need to import inArray at top. I'll just do separate queries or a loop for now to be safe with existing imports,
+    // OR just use the IDs if I can't easily change imports at top of file with this tool call.
+    // actually I can assume I can add imports if I replace the top.
+    // But I'm appending to the bottom basically.
+    // I'll assume simple fetch for now or iterate.
+    // Let's use `inArray` and add the import in a separate edit if needed, OR just fetch all techs (small list) and find.
+    const allTechs = await db.select().from(technologies);
+    techNames = allTechs.filter((t) => ids.includes(t.id)).map((t) => t.name);
+  }
+
+  return {
+    path: pathTitle,
+    technologies: techNames.join(", "),
+    difficulty: s.difficulty,
+  };
+}
+
+// --- MESSAGES ---
+
+import { messages } from "@/db/schema";
+
+export async function saveSessionMessage(data: {
+  sessionId: string;
+  role: "user" | "ai";
+  content: string;
+}) {
+  await db.insert(messages).values({
+    id: crypto.randomUUID(),
+    sessionId: data.sessionId,
+    role: data.role,
+    content: data.content,
+    timestamp: new Date(),
+  });
 }

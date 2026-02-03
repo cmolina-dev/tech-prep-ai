@@ -7,6 +7,7 @@ import StepIndicator from "@/components/StepIndicator";
 import TechSelector from "@/components/TechSelector";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import { InterviewPath, TechOption } from "@/data/mockData";
+import { createSession } from "@/app/actions";
 
 interface InterviewWizardProps {
   paths: InterviewPath[];
@@ -28,6 +29,10 @@ export default function InterviewWizard({
 
   const selectedPath = paths.find((p) => p.id === selectedPathId);
 
+  // Validation Logic
+  const isStep1Valid = !!selectedPathId;
+  const isStep2Valid = selectedTechs.length > 0;
+
   const handleNext = () => {
     if (currentStep < 3) setCurrentStep((prev) => prev + 1);
   };
@@ -44,14 +49,24 @@ export default function InterviewWizard({
     );
   };
 
-  const handleStartSession = () => {
-    console.log("Starting Session:", {
-      path: selectedPathId,
-      techs: selectedTechs,
-      difficulty,
-      mode: sessionMode,
-    });
-    router.push("/interview");
+  const handleStartSession = async () => {
+    // console.log("Starting Session:", {
+    //   path: selectedPathId,
+    //   techs: selectedTechs,
+    //   difficulty,
+    //   mode: sessionMode,
+    // });
+    try {
+      const sessionId = await createSession({
+        pathId: selectedPathId,
+        techIds: selectedTechs,
+        difficulty,
+        mode: sessionMode,
+      });
+      router.push(`/interview?sessionId=${sessionId}`);
+    } catch (e) {
+      console.error("Failed to start session", e);
+    }
   };
 
   const filteredTechs = technologies.filter((t) => {
@@ -232,7 +247,8 @@ export default function InterviewWizard({
               {currentStep < 3 ? (
                 <button
                   onClick={handleNext}
-                  className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-lg font-bold flex items-center gap-2 transition-all shadow-lg shadow-blue-600/20"
+                  disabled={currentStep === 1 ? !isStep1Valid : !isStep2Valid}
+                  className={`bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-lg font-bold flex items-center gap-2 transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   Next Step
                   <ArrowRight size={20} />
