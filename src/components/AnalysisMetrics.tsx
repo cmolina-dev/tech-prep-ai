@@ -1,4 +1,4 @@
-import styles from './AnalysisMetrics.module.css';
+
 
 interface MetricCardProps {
   title: string;
@@ -11,20 +11,22 @@ function MetricCard({ title, value, trend, label }: MetricCardProps) {
   const isPositive = trend > 0;
   
   return (
-    <div className={styles.card}>
-      <div className={styles.header}>
-        <span className={styles.title}>{title}</span>
+    <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6">
+      <div className="flex justify-between items-start mb-4">
+        <span className="text-slate-400 text-xs uppercase tracking-wider font-semibold">{title}</span>
         {/* Placeholder for icon/chart */}
-        <div className={styles.iconPlaceholder} />
+        <div className="w-8 h-8 bg-white/5 rounded" />
       </div>
-      <div className={styles.content}>
-        <div className={styles.valueRow}>
-          <span className={styles.value}>{value}%</span>
-          <span className={`${styles.trend} ${isPositive ? styles.positive : styles.negative}`}>
-            {isPositive ? '↗' : '↘'} {Math.abs(trend)}%
-          </span>
+      <div className="flex flex-col justify-between h-full"> 
+        <div>
+          <div className="flex items-baseline gap-3 mb-2">
+            <span className="text-[2.5rem] font-bold text-white leading-none">{value}%</span>
+            <span className={`text-sm font-semibold px-2 py-1 rounded ${isPositive ? 'text-green-500 bg-green-500/10' : 'text-red-500 bg-red-500/10'}`}>
+              {isPositive ? '↗' : '↘'} {Math.abs(trend)}%
+            </span>
+          </div>
+          <p className="text-slate-400 text-sm leading-relaxed m-0">{label}</p>
         </div>
-        <p className={styles.label}>{label}</p>
       </div>
     </div>
   );
@@ -38,7 +40,7 @@ export default function AnalysisMetrics() {
   ];
 
   return (
-    <div className={styles.container}>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       {metrics.map((m) => (
         <MetricCard key={m.title} {...m} />
       ))}

@@ -6,7 +6,7 @@ import SummaryMetrics from '@/components/SummaryMetrics';
 import PerformanceChart from '@/components/PerformanceChart/PerformanceChart';
 import SessionQuestions from '@/components/SessionQuestions';
 import { performanceHistory } from '@/data/mockData'; // Keep this for now or fetch extended history
-import styles from './page.module.css';
+
 
 function SessionSummaryContent() {
   const router = useRouter();
@@ -40,25 +40,25 @@ function SessionSummaryContent() {
     fetchSummary();
   }, [sessionId]);
 
-  if (loading) return <div className={styles.container}>Loading summary...</div>;
+  if (loading) return <div className="min-h-screen bg-background text-white p-10">Loading summary...</div>;
 
   // Use real data or fallback to empty state
   const stats = summaryData?.stats || { overallScore: 0 };
   const questions = summaryData?.questions || [];
 
   return (
-    <div className={styles.container}>
-      <header className={styles.header}>
-        <div className={styles.headerLeft}>
-          <h1 className={styles.title}>Session Summary</h1>
-          <p className={styles.subtitle}>Great job! Here is how you performed in your latest mock interview.</p>
+    <div className="min-h-screen bg-background text-white p-10">
+      <header className="max-w-[1000px] mx-auto mb-10 flex justify-between items-center md:flex-row flex-col max-md:items-start max-md:gap-4">
+        <div className="flex-1">
+          <h1 className="text-3xl font-extrabold mb-2 tracking-tight">Session Summary</h1>
+          <p className="text-slate-400 text-base m-0">Great job! Here is how you performed in your latest mock interview.</p>
         </div>
-        <button className={styles.compareBtn}>
+        <button className="bg-blue-500 text-white border-none font-semibold py-3 px-5 rounded-md text-sm cursor-pointer shadow-md transition-colors hover:bg-blue-600">
           Compare with Previous
         </button>
       </header>
 
-      <div className={styles.content}>
+      <div className="max-w-[1000px] mx-auto">
         <SummaryMetrics stats={stats} />
         
         <PerformanceChart data={performanceHistory} />
@@ -66,8 +66,8 @@ function SessionSummaryContent() {
         <SessionQuestions questions={questions} />
       </div>
 
-      <div className={styles.footer}>
-        <p className={styles.footerText}>Want to try again? <button className={styles.linkBtn} onClick={() => router.push('/')}>Start a new practice session</button></p>
+      <div className="text-center mt-16 mb-8">
+        <p className="text-slate-400 text-sm">Want to try again? <button className="bg-transparent border-none text-blue-500 font-medium cursor-pointer p-0 text-sm ml-1 hover:underline" onClick={() => router.push('/')}>Start a new practice session</button></p>
       </div>
     </div>
   );

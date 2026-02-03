@@ -1,7 +1,7 @@
 'use client';
 
 import { PerformanceDataPoint } from '@/data/mockData';
-import styles from './PerformanceChart.module.css';
+
 
 interface PerformanceChartProps {
   data: PerformanceDataPoint[];
@@ -25,20 +25,20 @@ export default function PerformanceChart({ data }: PerformanceChartProps) {
   const areaPoints = `0,100 ${points} 100,100`;
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
+    <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6 mb-8">
+      <div className="flex justify-between items-start mb-8">
         <div>
-          <h3 className={styles.title}>Performance Trend</h3>
-          <p className={styles.subtitle}>Fluency & Technical Accuracy over last 5 sessions</p>
+          <h3 className="text-white text-base font-semibold mb-1 m-0">Performance Trend</h3>
+          <p className="text-slate-400 text-xs m-0">Fluency & Technical Accuracy over last 5 sessions</p>
         </div>
-        <div className={styles.legend}>
-          <span className={styles.legendItem}><span className={styles.dotFluency}></span> Fluency</span>
-          <span className={styles.legendItem}><span className={styles.dotAvg}></span> Avg.</span>
+        <div className="flex gap-4">
+          <span className="flex items-center gap-2 text-slate-400 text-xs"><span className="w-2 h-2 rounded-full bg-blue-500"></span> Fluency</span>
+          <span className="flex items-center gap-2 text-slate-400 text-xs"><span className="w-2 h-2 rounded-full bg-slate-600"></span> Avg.</span>
         </div>
       </div>
       
-      <div className={styles.chartArea}>
-        <svg className={styles.svg} viewBox="0 0 100 100" preserveAspectRatio="none">
+      <div className="relative h-[200px] w-full">
+        <svg className="w-full h-full visible" viewBox="0 0 100 100" preserveAspectRatio="none">
           <defs>
             <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="rgba(59, 130, 246, 0.2)" />
@@ -61,12 +61,12 @@ export default function PerformanceChart({ data }: PerformanceChartProps) {
         </svg>
         
         {/* X Axis Labels */}
-        <div className={styles.xAxis}>
-          <span className={styles.xLabel}>Session 1</span>
-          <span className={styles.xLabel}>Session 2</span>
-          <span className={styles.xLabel}>Session 3</span>
-          <span className={styles.xLabel}>Session 4</span>
-          <span className={styles.xLabelActive}>Current</span>
+        <div className="flex justify-between mt-4 px-[10px]">
+          <span className="text-slate-500 text-xs">Session 1</span>
+          <span className="text-slate-500 text-xs">Session 2</span>
+          <span className="text-slate-500 text-xs">Session 3</span>
+          <span className="text-slate-500 text-xs">Session 4</span>
+          <span className="text-blue-500 text-xs font-semibold">Current</span>
         </div>
       </div>
     </div>

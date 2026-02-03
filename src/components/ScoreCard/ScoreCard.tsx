@@ -1,6 +1,6 @@
 'use client';
 
-import styles from './ScoreCard.module.css';
+
 
 interface ScoreCardProps {
   score: number;
@@ -14,12 +14,27 @@ export default function ScoreCard({ score, label, category, color = '#22c55e', s
   const circumference = 2 * Math.PI * 45;
   const strokeDashoffset = circumference - (score / 100) * circumference;
 
+  const sizeClasses = {
+    small: {
+      wrapper: 'w-20 h-20',
+      text: 'text-lg',
+    },
+    medium: {
+      wrapper: 'w-[120px] h-[120px]',
+      text: 'text-2xl',
+    },
+    large: {
+      wrapper: 'w-40 h-40',
+      text: 'text-3xl',
+    },
+  };
+
   return (
-    <div className={`${styles.card} ${styles[size]}`}>
-      <div className={styles.circleWrapper}>
-        <svg className={styles.circle} viewBox="0 0 100 100">
+    <div className={`flex flex-col items-center gap-2`}>
+      <div className={`relative flex items-center justify-center ${sizeClasses[size].wrapper}`}>
+        <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
           <circle
-            className={styles.bg}
+            className="stroke-muted"
             cx="50"
             cy="50"
             r="45"
@@ -27,7 +42,7 @@ export default function ScoreCard({ score, label, category, color = '#22c55e', s
             strokeWidth="8"
           />
           <circle
-            className={styles.progress}
+            className="transition-[stroke-dashoffset] duration-500 ease-out"
             cx="50"
             cy="50"
             r="45"
@@ -41,14 +56,14 @@ export default function ScoreCard({ score, label, category, color = '#22c55e', s
             }}
           />
         </svg>
-        <div className={styles.scoreText}>
-          <span className={styles.scoreValue}>{score}%</span>
-          <span className={styles.badge} style={{ backgroundColor: `${color}20`, color }}>
+        <div className="absolute flex flex-col items-center gap-1">
+          <span className={`font-bold text-foreground ${sizeClasses[size].text}`}>{score}%</span>
+          <span className="px-2 py-[2px] rounded-full text-xs font-medium" style={{ backgroundColor: `${color}20`, color }}>
             {label}
           </span>
         </div>
       </div>
-      <p className={styles.category}>{category}</p>
+      <p className="text-sm text-secondary-foreground text-center">{category}</p>
     </div>
   );
 }
