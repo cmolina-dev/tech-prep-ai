@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import PathCard from '@/components/PathCard';
 import { interviewPaths, difficultyOptions } from '@/data/mockData';
-import styles from './page.module.css';
 
 export default function InterviewSetup() {
   const router = useRouter();
@@ -17,21 +16,21 @@ export default function InterviewSetup() {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Interview Setup</h1>
-        <p className={styles.pageSubtitle}>
+    <div className="min-h-[calc(100vh-64px)] px-6 py-8">
+      <div className="max-w-[1400px] mx-auto mb-8">
+        <h1 className="text-3xl font-bold text-white mb-2">Interview Setup</h1>
+        <p className="text-base text-secondary-foreground">
           Configure your practice session parameters to simulate real-world scenarios.
         </p>
       </div>
 
-      <div className={styles.content}>
-        <div className={styles.leftPanel}>
-          <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Select Path</h2>
-            <span className={styles.stepIndicator}>STEP 1 OF 2</span>
+      <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
+        <div className="flex flex-col gap-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg font-semibold text-white">Select Path</h2>
+            <span className="text-xs text-muted-foreground tracking-widest">STEP 1 OF 2</span>
           </div>
-          <div className={styles.pathList}>
+          <div className="flex flex-col gap-4">
             {interviewPaths.map((path) => (
               <PathCard
                 key={path.id}
@@ -43,40 +42,42 @@ export default function InterviewSetup() {
           </div>
         </div>
 
-        <div className={styles.rightPanel}>
-          <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Configuration</h2>
-            <span className={styles.stepIndicator}>STEP 2 OF 2</span>
-          </div>
+        <div className="flex flex-col gap-6 sticky top-[calc(64px+32px)]">
+          <div className="bg-card border border-border rounded-xl p-8">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-lg font-semibold text-white">Configuration</h2>
+              <span className="text-xs text-muted-foreground tracking-widest">STEP 2 OF 2</span>
+            </div>
 
-          <div className={styles.configCard}>
-            <div className={styles.configSection}>
-              <div className={styles.configLabel}>
-                <span className={styles.configIcon}>🎚️</span>
+            <div className="mb-8">
+              <div className="flex items-center gap-2 text-sm font-semibold text-white mb-4">
+                <span className="text-base">🎚️</span>
                 Difficulty Level
               </div>
-              <div className={styles.difficultyList}>
+              <div className="flex flex-col gap-2">
                 {difficultyOptions.map((option) => (
                   <label
                     key={option.id}
-                    className={`${styles.difficultyOption} ${difficulty === option.id ? styles.difficultyActive : ''}`}
+                    className={`flex items-center gap-4 p-2 px-4 bg-secondary border border-border rounded-md cursor-pointer transition-all hover:border-slate-500 ${
+                      difficulty === option.id ? 'bg-primary/10 border-primary' : ''
+                    }`}
                   >
-                    <div className={styles.radioContainer}>
+                    <div className="flex items-center justify-center shrink-0">
                       <div 
-                        className={styles.radio}
+                        className="w-5 h-5 border-2 border-slate-600 rounded-full flex items-center justify-center transition-all"
                         style={{ 
                           borderColor: difficulty === option.id ? option.color : undefined,
                           backgroundColor: difficulty === option.id ? option.color : undefined 
                         }}
                       >
                         {difficulty === option.id && (
-                          <div className={styles.radioInner} />
+                          <div className="w-2 h-2 bg-white rounded-full" />
                         )}
                       </div>
                     </div>
-                    <div className={styles.difficultyInfo}>
-                      <span className={styles.difficultyTitle}>{option.title}</span>
-                      <span className={styles.difficultyDescription}>{option.description}</span>
+                    <div className="flex flex-col gap-[2px]">
+                      <span className="text-sm font-medium text-white">{option.title}</span>
+                      <span className="text-xs text-muted-foreground">{option.description}</span>
                     </div>
                     <input
                       type="radio"
@@ -84,42 +85,52 @@ export default function InterviewSetup() {
                       value={option.id}
                       checked={difficulty === option.id}
                       onChange={() => setDifficulty(option.id)}
-                      className={styles.hiddenRadio}
+                      className="absolute opacity-0 pointer-events-none"
                     />
                   </label>
                 ))}
               </div>
             </div>
 
-            <div className={styles.configSection}>
-              <div className={styles.configLabel}>
-                <span className={styles.configIcon}>⚡</span>
+            <div className="mb-8">
+              <div className="flex items-center gap-2 text-sm font-semibold text-white mb-4">
+                <span className="text-base">⚡</span>
                 Session Mode
               </div>
-              <div className={styles.modeToggle}>
+              <div className="flex bg-secondary rounded-md p-1 gap-1">
                 <button
-                  className={`${styles.modeBtn} ${sessionMode === 'mock' ? styles.modeBtnActive : ''}`}
+                  className={`flex-1 py-2 px-4 bg-transparent rounded text-sm text-secondary-foreground transition-all hover:text-white ${
+                    sessionMode === 'mock' ? 'bg-muted text-white' : ''
+                  }`}
                   onClick={() => setSessionMode('mock')}
                 >
                   Mock Interview
                 </button>
                 <button
-                  className={`${styles.modeBtn} ${sessionMode === 'practice' ? styles.modeBtnActive : ''}`}
+                  className={`flex-1 py-2 px-4 bg-transparent rounded text-sm text-secondary-foreground transition-all hover:text-white ${
+                    sessionMode === 'practice' ? 'bg-muted text-white' : ''
+                  }`}
                   onClick={() => setSessionMode('practice')}
                 >
                   Practice
                 </button>
               </div>
-              <p className={styles.modeDescription}>
-                <span className={styles.modeHighlight}>Mock Interview:</span> Timed session, AI acts as an interviewer with follow-up questions.
+              <p className="mt-4 text-xs text-muted-foreground leading-relaxed">
+                <span className="text-primary font-medium">Mock Interview:</span> Timed session, AI acts as an interviewer with follow-up questions.
               </p>
             </div>
 
-            <button className={styles.startBtn} onClick={handleStartSession}>
-              <span className={styles.playIcon}>▶</span>
+            <button 
+              className="w-full p-4 bg-gradient-brand text-white font-semibold rounded-md flex items-center justify-center gap-2 transition-all hover:-translate-y-px hover:shadow-lg hover:shadow-green-500/20"
+              onClick={handleStartSession}
+              style={{
+                background: 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)'
+              }}
+            >
+              <span className="text-sm">▶</span>
               Start Session
             </button>
-            <p className={styles.durationNote}>Estimated duration: ~45 mins</p>
+            <p className="text-center mt-2 text-xs text-muted-foreground">Estimated duration: ~45 mins</p>
           </div>
         </div>
       </div>
