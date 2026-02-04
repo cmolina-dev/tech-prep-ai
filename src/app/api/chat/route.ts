@@ -1,6 +1,5 @@
 import { db } from "@/db";
 import { sessions, messages, paths, technologies } from "@/db/schema";
-import { SYSTEM_PROMPTS, InterviewTopic, Difficulty } from "@/lib/prompts";
 import { aiClient } from "@/lib/ai";
 import { eq, asc } from "drizzle-orm";
 import { NextResponse } from "next/server";
@@ -9,11 +8,8 @@ export async function POST(req: Request) {
   try {
     const { sessionId, message } = await req.json();
 
-    if (!sessionId || !message) {
-      return NextResponse.json(
-        { error: "Missing sessionId or message" },
-        { status: 400 },
-      );
+    if (!sessionId) {
+      return NextResponse.json({ error: "Missing sessionId" }, { status: 400 });
     }
 
     // 1. Fetch Session Info
@@ -25,7 +21,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Session not found" }, { status: 404 });
     }
 
-    // Fetch Context Details
+    // 2. Fetch Context Details
     let pathTitle = "General Software Engineering";
     if (session.pathId) {
       const p = await db
@@ -39,26 +35,37 @@ export async function POST(req: Request) {
     let techNames = "General concepts";
     if (session.techIds) {
       const ids = session.techIds.split(",");
-      const allTechs = await db.select().from(technologies); // Optimization: could filter by IDs query
+      const allTechs = await db.select().from(technologies);
       const names = allTechs
         .filter((t) => ids.includes(t.id))
         .map((t) => t.name);
       if (names.length) techNames = names.join(", ");
     }
 
-    // 3. Fetch History
+    // 3. Fetch Message History
     const messageHistory = await db.query.messages.findMany({
       where: eq(messages.sessionId, sessionId),
       orderBy: asc(messages.timestamp),
     });
 
-    // 4. Prepare Prompts
+    // 4. Save user message if provided (not for initial greeting)
+    if (message) {
+      await db.insert(messages).values({
+        id: crypto.randomUUID(),
+        sessionId,
+        role: "user",
+        content: message,
+      });
+    }
+
+    // 5. Prepare Prompts
     const systemPrompt = `You are a Senior Technical Recruiter conducting a spoken interview for a ${session.difficulty} position in ${pathTitle}. The stack includes: ${techNames}.
       Interaction Rules:
       1. **One Question Only:** Ask exactly ONE question at a time. Never provide a list of questions.
       2. **Feedback Loop:** If I answer, briefly validate my technical accuracy and correct any major English grammar mistakes first.
       3. **Flow:** After the brief feedback, immediately ask the next single question.
-      4. **Style:** Be concise, professional, and conversational. Do not use emojis.`;
+      4. **Style:** Be concise, professional, and conversational. Do not use emojis or code examples.`;
+
     const apiMessages = [
       { role: "system", content: systemPrompt },
       ...messageHistory.map((m) => ({
@@ -70,7 +77,20 @@ export async function POST(req: Request) {
       })),
     ];
 
-    // 5. Call AI (Stream)
+    // Add appropriate user message based on context
+    if (messageHistory.length === 0 && !message) {
+      // Initial greeting - no history, no user message
+      apiMessages.push({
+        role: "user",
+        content:
+          "Please introduce yourself and start the interview with your first question.",
+      });
+    } else if (message) {
+      // Regular message flow
+      apiMessages.push({ role: "user", content: message });
+    }
+
+    // 6. Call AI (Stream)
     const completion = await aiClient.chat.completions.create({
       model: "local-model",
       messages: apiMessages as any,

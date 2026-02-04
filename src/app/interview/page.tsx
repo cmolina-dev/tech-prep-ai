@@ -26,13 +26,10 @@ export default function InterviewChat() {
     sendMessage,
     startListening,
     stopListening,
+    finishSession,
   } = useInterview(urlSessionId); // Pass URL ID
 
   const [inputValue, setInputValue] = useState("");
-
-  // Start session on mount ONLY if no ID (legacy fallback) or handled inside hook
-  // actually we remove the hardcoded startSession entirely.
-  // The hook should handle the "start" if an ID is present but empty chat.
 
   // Update input when transcript changes
   useEffect(() => {
@@ -65,6 +62,13 @@ export default function InterviewChat() {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
+    }
+  };
+
+  const handleFinish = async () => {
+    const success = await finishSession();
+    if (success && sessionId) {
+      router.push(`/summary?sessionId=${sessionId}`);
     }
   };
 

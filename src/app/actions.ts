@@ -168,16 +168,6 @@ export async function getSessionContext(sessionId: string) {
   let techNames: string[] = [];
   if (s.techIds) {
     const ids = s.techIds.split(",");
-    // Drizzle doesn't have 'inArray' easily reachable globally without importing?
-    // actually `inArray(technologies.id, ids)` works.
-    // simpler: fetch all techs and filter, or just map if we want to be lazy.
-    // or use inArray: import { inArray } from 'drizzle-orm';
-    // I need to import inArray at top. I'll just do separate queries or a loop for now to be safe with existing imports,
-    // OR just use the IDs if I can't easily change imports at top of file with this tool call.
-    // actually I can assume I can add imports if I replace the top.
-    // But I'm appending to the bottom basically.
-    // I'll assume simple fetch for now or iterate.
-    // Let's use `inArray` and add the import in a separate edit if needed, OR just fetch all techs (small list) and find.
     const allTechs = await db.select().from(technologies);
     techNames = allTechs.filter((t) => ids.includes(t.id)).map((t) => t.name);
   }
